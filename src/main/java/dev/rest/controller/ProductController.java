@@ -4,6 +4,7 @@ import dev.rest.dto.ProductRequest;
 import dev.rest.dto.ProductResponse;
 import dev.rest.model.Product;
 import dev.rest.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,7 +46,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest request) {
+    public ResponseEntity<ProductResponse> createProduct(@Valid  @RequestBody ProductRequest request) {
         ProductResponse response = productService.createProduct(request);
 
         URI location = URI.create("/api/products/" + response.id());
@@ -58,7 +59,7 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable Long id,
-            @RequestBody ProductRequest request
+            @Valid @RequestBody ProductRequest request
     ) {
         ProductResponse updated = productService.updateProduct(id, request);
 
