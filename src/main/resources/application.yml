@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: springapp
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/demo_db?serverTimezone=UTC&useSSL=false
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+jwt:
+  secret: "dce9a1cf98d54495aa3b44c258e54cf4"
