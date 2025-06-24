@@ -22,7 +22,10 @@ public record ProductResponse(
         int stock,
 
         @Schema(description = "상품 카테고리", example = "전자제품")
-        String category
+        String category,
+
+        @Schema(description = "상품 등록자 ID", example = "42")
+        Long userId
 
 ) {
     public static ProductResponse from(Product product) {
@@ -32,7 +35,8 @@ public record ProductResponse(
                 product.getDescription(),
                 product.getPrice(),
                 product.getStock(),
-                product.getCategory()
+                product.getCategory(),
+                product.getUser().getId()
         );
     }
 }

@@ -44,13 +44,14 @@ public class Product {
         this.user = user;
     }
 
-    public static Product from(ProductRequest request) {
+    public static Product from(ProductRequest request, User user) {
         return new Product(
                 request.name(),
                 request.description(),
                 request.price(),
                 request.stock(),
-                request.category()
+                request.category(),
+                user
         );
     }
 

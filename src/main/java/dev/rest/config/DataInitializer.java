@@ -7,6 +7,9 @@ import dev.rest.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -15,9 +18,29 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initData(
             ProductRepository productRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder
     ) {
         return args -> {
+            // 1. 임시 사용자 생성
+            List<User> users = new ArrayList<>();
+            users.add(userRepository.save(User.builder()
+                    .username("alice")
+                    .password(passwordEncoder.encode("password1"))
+                    .email("alice@example.com")
+                    .build()));
+            users.add(userRepository.save(User.builder()
+                    .username("bob")
+                    .password(passwordEncoder.encode("password2"))
+                    .email("bob@example.com")
+                    .build()));
+            users.add(userRepository.save(User.builder()
+                    .username("charlie")
+                    .password(passwordEncoder.encode("password3"))
+                    .email("charlie@example.com")
+                    .build()));
+
+            // 2. 테스트 상품 생성 + 사용자 순환 배정
             List<Product> products = List.of(
                     new Product("맥북 프로 16인치", "고성능 M칩을 탑재한 전문가용 노트북", 3500000, 5, "전자제품"),
                     new Product("에어팟 프로", "액티브 노이즈 캔슬링이 탑재된 무선 이어폰", 300000, 10, "전자제품"),
@@ -35,6 +58,8 @@ public class DataInitializer {
 
             for (int i = 0; i < products.size(); i++) {
                 Product product = products.get(i);
+                User user = users.get(i % users.size()); // 순환 배정
+                product.setUser(user); // 소유자 설정
                 productRepository.save(product);
             }
         };

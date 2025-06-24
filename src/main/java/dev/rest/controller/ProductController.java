@@ -23,6 +23,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -62,7 +63,7 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<ProductResponse>> getProductById(@PathVariable Long id) {
         ProductResponse response = productService.getProductById(id);
-        EntityModel<ProductResponse> model = assembler.toModelForDetail(response);
+        EntityModel<ProductResponse> model = assembler.toModelForDetail(response, response.userId());
         return ResponseEntity.ok(model);
     }
 
@@ -83,8 +84,8 @@ public class ProductController {
             )
     })
     @PostMapping(produces = MediaTypes.HAL_JSON_VALUE) //Content-type을 HAL(Hypertext Application Language) 타입으로 설정
-    public ResponseEntity<EntityModel<ProductResponse>> createProduct(@Valid @RequestBody ProductRequest request) {
-        ProductResponse response = productService.createProduct(request);
+    public ResponseEntity<EntityModel<ProductResponse>> createProduct(@Valid @RequestBody ProductRequest request, @AuthenticationPrincipal User user) {
+        ProductResponse response = productService.createProduct(request, user);
 
         // HATEOAS 설정
         EntityModel<ProductResponse> model = assembler.toModelForCreate(response);
@@ -97,16 +98,17 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<EntityModel<ProductResponse>> updateProduct(
             @PathVariable Long id,
-            @Valid @RequestBody ProductRequest request
+            @Valid @RequestBody ProductRequest request,
+            @AuthenticationPrincipal User user
     ) {
-        ProductResponse updated = productService.updateProduct(id, request);
-        EntityModel<ProductResponse> model = assembler.toModelForUpdate(updated);
+        ProductResponse updated = productService.updateProduct(id, request, user);
+        EntityModel<ProductResponse> model = assembler.toModelForUpdate(updated, user.getId());
         return ResponseEntity.ok(model);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<EntityModel<ProductResponse>> deleteProduct(@PathVariable Long id) {
-        ProductResponse deleted = productService.deleteProduct(id);
+    public ResponseEntity<EntityModel<ProductResponse>> deleteProduct(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        ProductResponse deleted = productService.deleteProduct(id, user);
         EntityModel<ProductResponse> model = assembler.toModelForDelete(deleted);
         return ResponseEntity.ok(model);
     }
